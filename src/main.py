@@ -8,13 +8,15 @@ import os
 def transform_dictionary(dictionary):
     output = {'name': dictionary['name'],
               'created_at': datetime.fromisoformat(
-                  dictionary['created_at']).astimezone(timezone.utc).__str__()}
+                  dictionary['created_at']).astimezone(timezone.utc).__str__(),
+              'status': dictionary['status']}
     if dictionary['state'] is not None:
         output['cpu_usage'] = dictionary['state']['cpu']['usage']
         output['memory_usage'] = dictionary['state']['memory']['usage']
         addresses = []
         for network in dictionary['state']['network']:
-            for address in dictionary['state']['network'][network]['addresses']:
+            for address in dictionary['state']['network'][network][
+                'addresses']:
                 addresses.append(address['address'])
         output['addresses'] = addresses
     else:
