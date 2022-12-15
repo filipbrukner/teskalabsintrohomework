@@ -14,8 +14,4 @@ To change to solution using recommended library I need to:
 - figure out how to transform the actual data
 - (maybe) figure out how to store data (if different from current version)
 
-I might focus more on making current version asynchronous over making
-recommended database work tomorrow
-
-**resources/db.json** is a TinyDB database, it appends upon opening a file
-so a refactorization to check if it already exists is necessary
+**resources/db.json** is a TinyDB database with designated output

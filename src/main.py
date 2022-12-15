@@ -8,8 +8,8 @@ import asyncio
 # Filters data from input dictionary
 def transform_dictionary(dictionary):
     output = {'name': dictionary['name'],
-              'created_at': datetime.fromisoformat(
-                  dictionary['created_at']).astimezone(timezone.utc).__str__(),
+              'created_at': str(datetime.fromisoformat(
+                  dictionary['created_at']).astimezone(timezone.utc)),
               'status': dictionary['status']}
     if dictionary['state'] is not None:
         output['cpu_usage'] = dictionary['state']['cpu']['usage']
@@ -27,15 +27,18 @@ def transform_dictionary(dictionary):
     return output
 
 
+# Safe insert into database
 def safe_insert(database, document):
     database.upsert(document, Query().name == document['name'])
 
 
+# Transform and insert a single document into database
 async def transform_insert(database, document):
     transformed = transform_dictionary(document)
     safe_insert(database, transformed)
 
 
+# Asyncio main function
 async def main(path, documents):
     db = TinyDB(os.path.abspath(path))
     await asyncio.gather(*(transform_insert(db, document) for document in documents))
@@ -46,12 +49,5 @@ if __name__ == '__main__':
     with open(os.path.abspath('resources/sample-data.json')) as json_file:
         data = json.load(json_file)
 
-    # Data transformation
-    documents = [transform_dictionary(dictionary) for dictionary in data]
-
+    # Data transformation and storing
     asyncio.run(main('resources/db.json', data))
-
-    # # Data storing
-    # db = TinyDB(os.path.abspath('resources/db.json'))
-    # for document in documents:
-    #     db.upsert(document, Query().name == document['name'])
